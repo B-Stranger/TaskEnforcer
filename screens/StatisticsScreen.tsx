@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import * as SQLite from 'expo-sqlite';
+
 import { getCompletedTasksCount } from '../controllers/TaskController';
 import { useDatabase } from '../DatabaseContext';
 
