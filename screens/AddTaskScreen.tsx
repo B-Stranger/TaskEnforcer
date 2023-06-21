@@ -18,11 +18,23 @@ const AddTaskScreen: React.FC = () => {
   const database = useDatabase();
   const [taskName, setTaskName] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toLocaleString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+  );
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
 
   const handleDateSelection = (date: Date) => {
-    setSelectedDate(date);
+    setSelectedDate(
+      date.toLocaleString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+    );
     setDatePickerVisible(false);
   };
 
@@ -66,9 +78,7 @@ const AddTaskScreen: React.FC = () => {
       <Text style={styles.popupTitle}>Add New Task</Text>
 
       <TouchableOpacity style={styles.dateButton} onPress={showDatePicker}>
-        <Text style={styles.dateButtonText}>
-          Selected Date: {selectedDate.toDateString()}
-        </Text>
+        <Text style={styles.dateButtonText}>Selected Date: {selectedDate}</Text>
       </TouchableOpacity>
 
       <TextInput

@@ -26,7 +26,14 @@ export default function App() {
 
   const setTasks = async () => {
     if (database) {
-      const tasks = await getTasksByDate(new Date(), database);
+      const tasks = await getTasksByDate(
+        new Date().toLocaleString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }),
+        database
+      );
       setTaskCount(tasks.length);
     }
   };

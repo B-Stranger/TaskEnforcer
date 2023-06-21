@@ -30,7 +30,7 @@ const Routine: React.FC<RoutineProps> = ({
     setExpanded(!expanded);
   };
 
-  const confirmDeleteTask = () => {
+  const confirmDeleteRoutine = () => {
     Alert.alert(
       'Delete Routine',
       `Are you sure you want to delete "${title}"? routine`,
@@ -44,7 +44,7 @@ const Routine: React.FC<RoutineProps> = ({
       ]
     );
   };
-  const confirmCompleteTask = () => {
+  const confirmCompleteRoutine = () => {
     Alert.alert(
       'Finish Task',
       `Are you sure that the "${title}" routine is completed ?`,
@@ -61,9 +61,7 @@ const Routine: React.FC<RoutineProps> = ({
   const handleCompleteTask = async (id: number) => {
     try {
       if (database) {
-        await completeRoutineById(id, database).then(() => {
-          navigation.navigate('Tasks' as never);
-        });
+        await completeRoutineById(id, database);
       }
     } catch (error) {
       console.log('Error completing task:', error);
@@ -81,21 +79,23 @@ const Routine: React.FC<RoutineProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={status ? styles.containerCompleted : styles.container}>
       <TouchableOpacity onPress={toggleExpansion}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{title}</Text>
           <View style={styles.buttonContainer}>
-            <CheckButton onPress={confirmCompleteTask} />
-            <FailureButton onPress={confirmDeleteTask} />
+            {status ? (
+              <Text style={styles.status}>Completed</Text>
+            ) : (
+              <View style={styles.buttonContainer}>
+                <CheckButton onPress={confirmCompleteRoutine} />
+                <FailureButton onPress={confirmDeleteRoutine} />
+              </View>
+            )}
           </View>
         </View>
         {expanded && (
           <View>
-            <Text style={styles.dayStrike}>
-              You have been following this routine for: 0 days
-            </Text>
-
             <Text style={styles.description}>{description}</Text>
           </View>
         )}
@@ -107,6 +107,12 @@ const Routine: React.FC<RoutineProps> = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#F5F5F5',
+    padding: 16,
+    marginBottom: 16,
+    borderRadius: 8,
+  },
+  containerCompleted: {
+    backgroundColor: 'green',
     padding: 16,
     marginBottom: 16,
     borderRadius: 8,
@@ -145,6 +151,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
+  },
+  status: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'green',
   },
 });
 

@@ -105,10 +105,31 @@ export const completeRoutineById = async (
       tx.executeSql(
         `
           UPDATE Routines
-          SET completed = 1
+          SET status = 1
           WHERE id = ?
           `,
         [id],
+        () => {
+          resolve();
+        },
+        (txObj, error) => {
+          reject(error);
+          return false;
+        }
+      );
+    });
+  });
+};
+
+export const resetAllRoutines = async (db: SQLite.WebSQLDatabase) => {
+  return new Promise<void>((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `
+          UPDATE Routines
+          SET status = 0
+          `,
+        [],
         () => {
           resolve();
         },

@@ -18,15 +18,22 @@ import { getTasksByDate } from '../controllers/TaskController';
 const TasksScreen: React.FC = () => {
   const navigation = useNavigation();
   const database = useDatabase();
+
   const [tasks, setTasks] = useState<ITask[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<string>(
+    new Date().toLocaleString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+  );
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
 
   useEffect(() => {
     loadTasksByDate(selectedDate);
   }, [selectedDate]);
 
-  const loadTasksByDate = async (date: Date) => {
+  const loadTasksByDate = async (date: string) => {
     try {
       if (database != null) {
         const tasks = await getTasksByDate(date, database);
@@ -47,7 +54,13 @@ const TasksScreen: React.FC = () => {
   );
 
   const handleDateSelection = (date: Date) => {
-    setSelectedDate(date);
+    setSelectedDate(
+      date.toLocaleString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+    );
     setDatePickerVisible(false);
   };
 
@@ -68,12 +81,25 @@ const TasksScreen: React.FC = () => {
       <View style={styles.dateContainer}>
         <TouchableOpacity onPress={showDatePicker} style={styles.dateButton}>
           <Ionicons name="calendar-sharp" size={24} color="black" />
-          <Text style={styles.dateText}>{selectedDate.toDateString()}</Text>
+          <Text style={styles.dateText}>{selectedDate}</Text>
         </TouchableOpacity>
 
-        {selectedDate.getDate() !== new Date().getDate() && (
+        {selectedDate !==
+          new Date().toLocaleString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          }) && (
           <TouchableOpacity
-            onPress={() => setSelectedDate(new Date())}
+            onPress={() =>
+              setSelectedDate(
+                new Date().toLocaleString('en-GB', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })
+              )
+            }
             style={styles.returnButton}
           >
             <Text style={styles.returnButtonText}>Return to Present</Text>

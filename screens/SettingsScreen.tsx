@@ -18,6 +18,7 @@ import {
 } from '../controllers/SettingsController';
 import ActionButton from '../components/buttons/ActionButton';
 import { useDatabase } from '../DatabaseContext';
+import { resetAllRoutines } from '../controllers/RoutineContoller';
 
 const SettingsScreen: React.FC = () => {
   const database = useDatabase();
@@ -35,7 +36,15 @@ const SettingsScreen: React.FC = () => {
     setNotifSound(status === 1);
     setDailyNotifTime(time);
   };
-
+  const handleResetRoutines = async () => {
+    try {
+      if (database) {
+        await resetAllRoutines(database);
+      }
+    } catch (error) {
+      console.log('Error resetting routines:', error);
+    }
+  };
   const toggleNotificationSound = async () => {
     const status = notifSound ? 0 : 1;
     setNotifSound(!notifSound);
@@ -48,19 +57,7 @@ const SettingsScreen: React.FC = () => {
     }
   };
 
-  const handleTimeChange = (event: any, selectedTime: any) => {
-    if (selectedTime) {
-      const currentTime = selectedTime || dailyNotifTime;
-      setDailyNotifTime(currentTime);
-      setDailyChooser(false);
-      setNotificationTime(
-        currentTime.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        })
-      );
-    }
-  };
+  const handleTimeChange = (event: any, selectedTime: any) => {};
 
   const confirmDeleteHistory = () => {
     Alert.alert(
@@ -71,6 +68,16 @@ const SettingsScreen: React.FC = () => {
         { text: 'Delete', style: 'destructive', onPress: handleDeleteHistory },
       ]
     );
+  };
+  const confirmResetRoutine = () => {
+    Alert.alert('Testing Reset', `This is a test function`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Complete',
+        style: 'default',
+        onPress: () => handleResetRoutines(),
+      },
+    ]);
   };
 
   return (
@@ -102,7 +109,6 @@ const SettingsScreen: React.FC = () => {
           />
         )}
       </View>
-
       <View style={styles.deleteButton}>
         <ActionButton
           color="red"
@@ -110,6 +116,12 @@ const SettingsScreen: React.FC = () => {
           onPress={confirmDeleteHistory}
         />
       </View>
+      <TouchableOpacity
+        style={styles.resetButton}
+        onPress={confirmResetRoutine}
+      >
+        <Text style={styles.resetButtonText}>Reset Routines</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -158,6 +170,20 @@ const styles = StyleSheet.create({
   },
   notificationButtonText: {
     marginLeft: 8,
+  },
+  resetButton: {
+    marginTop: 20,
+    borderWidth: 2,
+    borderColor: 'red',
+    padding: 10,
+    width: '50%',
+    alignItems: 'center',
+  },
+  resetButtonText: {
+    color: 'red',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
   },
 });
 

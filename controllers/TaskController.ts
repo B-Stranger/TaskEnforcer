@@ -2,16 +2,32 @@ import * as SQLite from 'expo-sqlite';
 import { INewTask, ITask } from '../models/task';
 
 export const getTasksByDate = async (
-  date: Date,
+  date: string,
   db: SQLite.WebSQLDatabase
 ): Promise<ITask[]> => {
   return new Promise<ITask[]>((resolve, reject) => {
     db.transaction(
       (tx) => {
-        tx.executeSql('SELECT * FROM Tasks ', [], (_, resultSet) => {
-          const tasks: ITask[] = resultSet.rows._array;
-          resolve(tasks);
-        });
+        tx.executeSql(
+          `
+              CREATE TABLE IF NOT EXISTS Tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                description TEXT,
+                status INTEGER NOT NULL,
+                date TEXT NOT NULL
+              )
+              `,
+          []
+        );
+        tx.executeSql(
+          'SELECT * FROM Tasks WHERE date = ? ',
+          [date],
+          (_, resultSet) => {
+            const tasks: ITask[] = resultSet.rows._array;
+            resolve(tasks);
+          }
+        );
       },
       (error) => {
         reject(error);
@@ -103,7 +119,7 @@ export const createNewTask = async (
       );
       tx.executeSql(
         'INSERT INTO Tasks (title, description, status, date) VALUES (?, ?, ?, ?)',
-        [newTask.title, newTask.description, 0, newTask.date.toISOString()],
+        [newTask.title, newTask.description, 0, newTask.date],
         (_, resultSet) => {
           resolve(resultSet.insertId);
         },
